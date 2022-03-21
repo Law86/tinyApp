@@ -50,6 +50,12 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);       
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL
+  const longURL = urlDatabase[shortURL]
+  res.redirect(longURL);
+});
+
 function generateRandomString() {
   return Math.random().toString(20).substring(0, 5);
 }
