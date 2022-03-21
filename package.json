@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Law86/tinyApp/issues"
   },
-  "homepage": "https://github.com/Law86/tinyApp#readme"
+  "homepage": "https://github.com/Law86/tinyApp#readme",
+  "dependencies": {
+    "express": "^4.17.3"
+  }
 }
