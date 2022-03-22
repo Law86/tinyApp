@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const PORT = 8079;
+const PORT = 8091;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -40,7 +40,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL
   const longURL = urlDatabase[shortURL]
-  const templateVars = { shortURL: shortURL, longURL: longURL };
+  const templateVars = { shortURL, longURL };
   res.render("urls_show", templateVars);
 });
 
@@ -61,6 +61,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL
   delete (urlDatabase[shortURL])
   res.redirect(`/urls`);       
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  const longURL = req.body.longURL;
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = longURL
+  res.redirect(`/urls/${shortURL}`);       
 });
 
 function generateRandomString() {
