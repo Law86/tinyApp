@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <style>
+.button1 {
+  background-color: white;
+  color: rgb(255, 0, 0);
+  border: 2px solid #e40707;
+  font-weight: bold;
+}
+    </style>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -17,6 +25,7 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -24,12 +33,12 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
+            <td><form method="POST" action="/urls/<%= url %>/delete"><button type="submit" class="button button1">Delete</button></form></td>
             
           </tr>
         <% } %>
       </tbody>
     </table>
-    <p class="card-text">Shorten a new URL: <a href="#">Eventual Link</a></p>
   </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
