@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const cookies = require("cookie-parser")
 
 const { redirect } = require("express/lib/response");
-const { createUser } = require("./helpers/helpers");
+const { createUser, confirmUser } = require("./helpers/helpers");
 const { userDatabase } = require("./data/userData");
 
 app.use(bodyParser.urlencoded({extended: true}), cookies());
@@ -37,7 +37,6 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const userID = req.cookies["user_id"];
   const currentUser = userDatabase[userID]
-  console.log(currentUser)
   const templateVars = { 
     urls: urlDatabase,
     user: currentUser,
@@ -96,14 +95,7 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${shortURL}`);      
 });
 
-app.post("/login", (req, res) => {
-  const userCookie = req.body.username
-  res.cookie("username", userCookie)
-  res.redirect(`/urls`);       
-});
-
 app.post("/logout", (req, res) => {
-  const userCookie = req.body.username
   res.clearCookie("user_id")
   res.redirect(`/urls`);       
 });
@@ -126,7 +118,7 @@ app.post("/register", (req, res) => {
  
   if (error) {
     console.log(error);
-    return res.send("400 Bad Request!");
+    return res.status(400).send("Bad Request");
     }
   
   res.cookie("user_id", newUserID)
@@ -142,6 +134,21 @@ app.get("/login", (req, res) => {
     user: currentUser,
   };
   res.render("urls_login", templateVars);
+});
+
+app.post("/login", (req, res) => {
+  console.log(req.body);
+  const email = req.body.email;
+  const password = req.body.password;
+  const { error, data } = confirmUser(email, password);
+
+  if (error) {
+    console.log(error);
+    return res.status(403).send("Forbidden");
+  }
+
+  res.cookie("user_id", data.id)
+  res.redirect(`/urls`);       
 });
 
 function generateRandomString() {
