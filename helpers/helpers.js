@@ -1,3 +1,5 @@
+const { userDatabase } = require("../data/userData");
+
 const createUser = (userDatabase, userInfo) => {
   const { id, email, password } = userInfo;
     console.log("create user function", id, email, password)
@@ -22,4 +24,29 @@ const createUser = (userDatabase, userInfo) => {
 
 }
 
-module.exports = { createUser } 
+const getUserByEmail = (givenEmail) => {
+  for (let id in userDatabase) {
+    const currentUser = userDatabase[id];
+    if (currentUser.email === givenEmail) {
+      return currentUser;
+    }
+  }
+  return false;
+}
+
+const confirmUser = (email, password) => {
+  // need to grab user from userData with a given email
+  const userFound = getUserByEmail(email) 
+
+  if (!userFound) {
+    return { error: "403 Forbidden - Email Not Found"}
+  }
+
+  if (userFound.password !== password) {
+    return { error: "403 Forbidden - Incorrect Password"}
+  }
+
+  return { error: null, data: userFound};
+} 
+
+module.exports = { createUser, confirmUser } 

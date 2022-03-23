@@ -12,7 +12,7 @@ const user2 = {
 
 const userDatabase = {
   "userRandomID": user,
-  "user2@example.com": user2
+  "user2RandomID": user2
 }
 
 module.exports = { userDatabase };
