@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
-const PORT = 8091;
+const PORT = 8089;
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
+const cookies = require("cookie-parser")
+const { redirect } = require("express/lib/response");
+app.use(bodyParser.urlencoded({extended: true}), cookies());
 
 app.set("view engine", "ejs");
 
@@ -29,18 +31,25 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL
   const longURL = urlDatabase[shortURL]
-  const templateVars = { shortURL, longURL };
+  const templateVars = { shortURL, longURL, username: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 
@@ -52,9 +61,13 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"],
+  };
   const shortURL = req.params.shortURL
   const longURL = urlDatabase[shortURL]
-  res.redirect(longURL);
+  res.render("urls");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -67,7 +80,19 @@ app.post("/urls/:shortURL", (req, res) => {
   const longURL = req.body.longURL;
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = longURL
-  res.redirect(`/urls/${shortURL}`);       
+  res.redirect(`/urls/${shortURL}`);      
+});
+
+app.post("/login", (req, res) => {
+  const userCookie = req.body.username
+  res.cookie("username", userCookie)
+  res.redirect(`/urls`);       
+});
+
+app.post("/logout", (req, res) => {
+  const userCookie = req.body.username
+  res.clearCookie("username")
+  res.redirect(`/urls`);       
 });
 
 function generateRandomString() {
