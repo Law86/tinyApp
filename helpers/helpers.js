@@ -1,5 +1,9 @@
 const { userDatabase } = require("../data/userData");
 
+function generateRandomString() {
+  return Math.random().toString(20).substring(2, 8);
+}
+
 const createUser = (userDatabase, userInfo) => {
   const { id, email, password } = userInfo;
     console.log("create user function", id, email, password)
@@ -19,7 +23,6 @@ const createUser = (userDatabase, userInfo) => {
 
   const newUser = { id, email, password };
   userDatabase[id] = newUser;
-  console.log(userDatabase)
   return { error: null, data: newUser };
 
 }
@@ -49,4 +52,17 @@ const confirmUser = (email, password) => {
   return { error: null, data: userFound};
 } 
 
-module.exports = { createUser, confirmUser } 
+const urlsForUser = (id, urlDB) => {
+  const results = {};
+
+  for (const url in urlDB) {
+    console.log("Does id:", id, "=", urlDB[url].userID)
+    if (id === urlDB[url].userID) {
+      
+      results[url] = urlDB[url]
+    }
+  }
+  return results;
+}
+
+module.exports = { createUser, confirmUser, generateRandomString, urlsForUser } 
