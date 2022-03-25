@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const { userDatabase } = require("../data/userData");
 
 function generateRandomString() {
@@ -17,6 +18,7 @@ const createUser = (userDatabase, userInfo) => {
 
   const users = Object.values(userDatabase)
   const userFound = users.find(user => user.email === email)
+
   if (userFound) {
     return { error: "400 Bad Request", data: null}
   }
@@ -40,15 +42,15 @@ const getUserByEmail = (givenEmail) => {
 const confirmUser = (email, password) => {
   // need to grab user from userData with a given email
   const userFound = getUserByEmail(email) 
-
+console.log(password, userFound.password)
   if (!userFound) {
     return { error: "403 Forbidden - Email Not Found"}
   }
 
-  if (userFound.password !== password) {
+  if (!bcrypt.compareSync(password, userFound.password)) {
     return { error: "403 Forbidden - Incorrect Password"}
   }
-
+  
   return { error: null, data: userFound};
 } 
 
@@ -56,7 +58,7 @@ const urlsForUser = (id, urlDB) => {
   const results = {};
 
   for (const url in urlDB) {
-    console.log("Does id:", id, "=", urlDB[url].userID)
+    
     if (id === urlDB[url].userID) {
       
       results[url] = urlDB[url]
@@ -65,4 +67,4 @@ const urlsForUser = (id, urlDB) => {
   return results;
 }
 
-module.exports = { createUser, confirmUser, generateRandomString, urlsForUser } 
+module.exports = { createUser, confirmUser, generateRandomString, urlsForUser, getUserByEmail } 
