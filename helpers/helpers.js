@@ -9,18 +9,14 @@ const createUser = (userDatabase, userInfo) => {
   const { id, email, password } = userInfo;
     console.log("create user function", id, email, password)
   if (!email || !password) {
-    return { error: "400 Bad Request", data: null }
-  }
-
-  if (email === "" || password === "") {
-    return { error: "400 Bad Request", data: null}
+    return { error: "400 Bad Request - Invalid credentials!", data: null }
   }
 
   const users = Object.values(userDatabase)
   const userFound = users.find(user => user.email === email)
 
   if (userFound) {
-    return { error: "400 Bad Request", data: null}
+    return { error: "400 Bad Request - User Already Exists!", data: null}
   }
 
   const newUser = { id, email, password };
@@ -40,7 +36,6 @@ const getUserByEmail = (givenEmail) => {
 }
 
 const confirmUser = (email, password) => {
-  // need to grab user from userData with a given email
   const userFound = getUserByEmail(email) 
 console.log(password, userFound.password)
   if (!userFound) {

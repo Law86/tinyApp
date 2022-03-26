@@ -20,6 +20,10 @@ const urlDatabase = {
     "2fI3vb": {
       longURL: "https://www.tsn.com",
       userID: "Mike"
+  },
+  "m5l78s": {
+    longURL: "https://www.cnn.com",
+    userID: "Test"
   }
 };
 
