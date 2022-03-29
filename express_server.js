@@ -14,13 +14,10 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['key1'],
-
 }));
 app.set("view engine", "ejs");
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
+// GET routes for rendering and redirecting
 
 app.get("/", (req, res) => {
   const userID = req.session["user_id"];
@@ -30,10 +27,10 @@ app.get("/", (req, res) => {
 
   if (!userID) {
   
-    res.redirect("/login");
- };
+    return res.redirect("/login");
+  };
 
-return res.render("urls_index", templateVars); 
+  return res.render("urls_index", templateVars); 
 });
 
 app.get("/urls.json", (req, res) => {
@@ -118,6 +115,8 @@ app.get("/urls/:id", (req, res) => {
  return res.status(403).send("Please sign in, or create an account!"); 
 });
 
+// All post routes below
+
 app.post("/urls", (req, res) => {
   const userID = req.session["user_id"];
   const shortURL = generateRandomString();
@@ -149,21 +148,30 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${shortURL}`);      
 });
 
+app.post("/urls/:shortURL/edit", (req, res) => {
+  console.log("user", req.session, req.params.shortURL)
+  const userID = req.session["user_id"];
+  const shortURL = req.params.shortURL;
+  const longURL = req.body.longURL;
+  
+  if (!userID) return res.status(403).send("Please sign in, or create an account!\n"); 
+
+  urlDatabase[shortURL].longURL = longURL;
+  res.redirect(`/urls/${shortURL}`);
+});
+
 app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(req.body.password, 10);
   const newUserID = generateRandomString();
-  const newUser = {id: newUserID, email: req.body.email, password: hashedPassword};
-  console.log("hash", hashedPassword);
+  const newUser = {id: newUserID, email: req.body.email, password: hashedPassword}; 
   const { error, data } = createUser(userDatabase, newUser);
 
   if (error) {
-    console.log(error);
     return res.status(400).send(error);
     }
 
-  req.session["user_id"] = "user_id";
+  req.session["user_id"] = userDatabase[newUserID].id;
   return res.redirect("/urls");
-   
 });
 
 app.post("/login", (req, res) => {
@@ -172,7 +180,6 @@ app.post("/login", (req, res) => {
   const { error, data } = confirmUser(email, password);
 
   if (error) {
-    console.log(error);
     return res.status(403).send("Forbidden - Account does not exist!");
   }
 
@@ -183,4 +190,10 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect(`/login`);       
+});
+
+// Calling and communicating of active port
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
 });

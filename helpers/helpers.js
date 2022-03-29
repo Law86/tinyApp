@@ -1,13 +1,16 @@
 const bcrypt = require('bcryptjs');
 const { userDatabase } = require("../data/userData");
 
+// Function for randomizing short URL and ID strings
 function generateRandomString() {
   return Math.random().toString(20).substring(2, 8);
 }
 
+// Function for throwing errors or creating user if successful
+
 const createUser = (userDatabase, userInfo) => {
   const { id, email, password } = userInfo;
-    console.log("create user function", id, email, password)
+
   if (!email || !password) {
     return { error: "400 Bad Request - Invalid credentials!", data: null }
   }
@@ -25,6 +28,8 @@ const createUser = (userDatabase, userInfo) => {
 
 }
 
+// Function created for testing
+
 const getUserByEmail = (givenEmail) => {
   for (let id in userDatabase) {
     const currentUser = userDatabase[id];
@@ -35,9 +40,10 @@ const getUserByEmail = (givenEmail) => {
   return false;
 }
 
+// Function created to verify user account upon login
+
 const confirmUser = (email, password) => {
   const userFound = getUserByEmail(email) 
-console.log(password, userFound.password)
   if (!userFound) {
     return { error: "403 Forbidden - Email Not Found"}
   }
@@ -48,6 +54,8 @@ console.log(password, userFound.password)
   
   return { error: null, data: userFound};
 } 
+
+// Function created to verify and properly display individual URLs
 
 const urlsForUser = (id, urlDB) => {
   const results = {};

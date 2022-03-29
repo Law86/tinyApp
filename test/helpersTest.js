@@ -1,6 +1,6 @@
 const { assert } = require('chai');
-
 const { getUserByEmail } = require('../helpers/helpers.js');
+
 
 const testUsers = {
   "userRandomID": {
